@@ -1,0 +1,10 @@
+.memoryCards {
+    display: flex;
+    flex-wrap: wrap;
+    width: 1000px;
+}
+
+.card {
+    border: 1px solid black;
+    width: 100px;
+}

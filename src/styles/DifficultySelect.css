@@ -1,0 +1,6 @@
+.difficultySelect > div {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    font-size: 2rem;
+}

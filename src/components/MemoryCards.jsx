@@ -23,9 +23,11 @@ function CardData(url, name) {
 }
 
 function Card({url, name, handleClick}) {
+    let capitalizedName;
+    (name) ? capitalizedName = name[0].toUpperCase() + name.slice(1) : capitalizedName = name;
     return <div className="card" onClick={() => handleClick(name)}>
         <img src={url} />
-        <p>{name}</p>
+        <p>{capitalizedName}</p>
     </div>
 }
 
@@ -44,18 +46,21 @@ export default function MemoryCards({difficulty, score, highScore, handleDifficu
     const [cardList, setCardList] = useState(Array.from({length: difficulty}, () => CardData('','')));
     const [seen, setSeen] = useState(new Set());
     const [status, setStatus] = useState(true);
+    const [loading, setLoading] = useState(true);
 
     function handleClick(name) {
-        if (seen.has(name)) {
-            if (score > highScore) handleHighScore(score);
-            setStatus(false);
+        if (status) {
+            if (seen.has(name)) {
+                if (score > highScore) handleHighScore(score);
+                setStatus(false);
+            }
+            else {
+                seen.add(name);
+                setSeen(new Set(seen));
+                handleScore(score+1);
+            }
+            shuffle(cardList);
         }
-        else {
-            seen.add(name);
-            setSeen(new Set(seen));
-            handleScore(score+1);
-        }
-        shuffle(cardList);
     }
 
     function handleEnd(e) {
@@ -72,11 +77,12 @@ export default function MemoryCards({difficulty, score, highScore, handleDifficu
         getCardInfo(difficulty).then((data) => {
             const newCardList = data.map((info) => CardData(info.sprites.front_default, info.name));
             setCardList(newCardList);
+            setLoading(false);
         });
     }, []);
 
-    return <div className="memoryCards">
-        {cards}
+    return <div className="memoryCards" id={(loading) && 'loading'}>
+        {(loading) ? <p>Loading</p> : cards}
         {(difficulty==score || !status) && <End difficulty={difficulty} score={score} handleEnd={handleEnd} />}
     </div>
 }
